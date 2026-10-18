@@ -235,7 +235,7 @@ FSA_ACT_1:
 	lw $t0, 4($a0)			# store pv->char_index in $t0
 	lb $t1, IN_BUFFER($t0)        # $t1 holds the $t0'th character in the input buffer
 	sw $t1, 8($a0)			# store the $t0'th character from the input buffer in the parse_variable struct i.e pv->cur_char = IN_BUFFER[pv->char_index];
-	lb $t2,	TYPE_BUFFER($t0)     # $t2 holds the $t0'th integer in the type buffer
+	lb $t2,	TYPE_BUFFER($t0)     # $t2 holds the $t0'th integer code in the type buffer
 	sw $t2, 12($a0)		# store the $t0'th integer code from the type buffer in the parse_variable struct i.e pv->cur_type = TYPE_BUFFER[pv->char_index];
 	add $t0, $t0, 1
 	sw $t0, 4($a0)			# pv->char_index += 1;
