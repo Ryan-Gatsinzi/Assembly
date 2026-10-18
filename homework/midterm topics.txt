@@ -1,0 +1,39 @@
+topics
+1. Number conversions
+    binary, octla, hex, decimal, 2s complement
+
+2. Logical + bitwise operators
+
+3. Read datastructures in mips
+
+4. Evaluate the mips code
+
+5. MIPS -> C conversions
+
+
+
+/*          revision quesitons          */
+1.
+     N0->left->head = N0;
+     N0->left->left = 0;
+
+2.
+int func (int a0){
+    for(int t0 = 0; array[t0] != -1; t0++)
+        if(array[t0] == a0) return t0;
+    
+    return -1;
+
+}
+
+9. 
+void mystery(int a0){
+    int t0 = a0/2;
+    int t1 = a0 % 2;
+
+    if(t0 != 0) mystery(t0);
+
+    printf("%d", t1); 
+}
+
+

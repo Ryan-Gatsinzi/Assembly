@@ -1,0 +1,173 @@
+// Part I
+
+#include <stdio.h>
+int x = 10;
+int A[] = {9,4,5,2,5,2,3,7,1,12};
+
+void select_sort(int N){
+  int i, j, min, max, tmp;
+  int t0 = N/2;   // temporary variable
+  i = 0;
+
+  LOOP:
+  if(i > t0) goto EXIT0;  
+  
+  min = i;
+  max = i;
+  
+  int t1 = N - i;
+  j = i + 1;
+
+  INNER_LOOP:
+  
+    if(j >= t1) goto EXIT1;
+    
+    if(A[j] > A[max]) max = j;  //set max index to j if current value at index j is greater than the index at max index
+    if(A[j] < A[min]) min = j;  //set min index to j if current value at index j is less than the index at min index
+    
+    j = j+1;    // step
+      goto INNER_LOOP;
+
+    EXIT1:    // outside the inner loop
+
+      // Carry out swap
+
+      tmp = A[i];
+      A[i] = A[min];
+      A[min] = tmp;
+
+      t0 = N-1;
+      t0 = t0 - i;
+
+      tmp = A[t0];
+      A[t0] = A[max];
+      A[max] = tmp;
+
+    i = i+1;
+    goto LOOP;
+
+  EXIT0:  // exit loop, function terminates
+}
+
+int main(){
+  select_sort(x);
+  for(int i = 0; i < x; i++)
+    printf("%d, ", A[i]);
+  
+}
+
+
+
+// Part II
+
+.data
+	array: .word 9,4,5,2,5,2,3,7,1,12	#initialize array
+
+.text
+
+MAIN:
+	li $t0, 10		# store array size N in register $t0
+	div $t1, $t0, 2		# store half the size of the array 
+	
+	li $t2, 0		# intialize iterator $t2 with 0
+	
+	LOOP:
+		bgt $t2, $t1, EXIT0	# branch to EXIT 0 if iterator $t2 is grater than half the size of the array ($t1)
+		
+		move $t3, $t2		# set min index ($t3) to current value of the iterator $t2
+		move $t4, $t2		# set max index ($t4) to current value of the iterator $t2		
+		
+		sub $t5, $t0, $t2	# store number of unsorted elements i.e size of array ($t0) - current iteration ($t2)
+		
+		add $t6, $t2, 1		# set inner iterator to $t6 with iterator $t2 + 1
+		
+		INNER_LOOP:
+			bge $t6, $t5, EXIT1	# branch to EXIT1 if inner iterator $t6 is greater than or equal to number of unsorted items
+						
+			mul $v0, $t6, 4		# store the $t6's address offset in $v0 i.e address offset for the j'th element
+			la $a0, array
+			add $a0, $a0, $v0
+			lw $t7, 0($a0)		# store the $t6'th  element in $t7
+			
+			move $a1, $t6		# temporarily store the inner iterator $t6
+		
+			mul $v0, $t4, 4		# store the address offset for the max index $t4
+			la $a0, array
+			add $a0, $a0, $v0
+			lw $t6,	0($a0)	 	# store the max element in $t6
+			
+			ble $t7, $t6, SKIP1	# if current value at index $t7 is less than or equal to the index at max index $t6, skip
+			move $t4, $a1		# set max index to current element's index
+			
+			SKIP1:
+			
+			mul $v0, $t3, 4		# store the address offset for the max index $t4
+			la $a0, array
+			add $a0, $a0, $v0
+			lw $t6,	0($a0) 		# store the min element in $t6
+			
+			bge $t7, $t6, SKIP2	# if current value at index $t7 is greater than or equal to the element at min index $t6, skip
+			move $t3, $a1		# set min index to current element's index
+			
+			SKIP2:
+			
+			move $t6, $a1		# retrieve temporarily store inner iterator			
+			add $t6, $t6, 1		# increment inner iterator
+			
+			j INNER_LOOP
+		
+		EXIT1:		# outside the inner loop
+		
+		# swap min value and the value at the current iterator index
+		
+			mul $v0, $t2, 4	# store the address offset of the array  for iterator index $t0
+			la $a0, array
+			add $a0, $a0, $v0
+			la $t1, 0($a0)	# $t1 = address of the $t2's element
+			lw $t5, ($t1)	# temporarily store the $t2'th element in $t5
+			
+			mul $v0, $t3 , 4	# store the address offset of the array for min index $t3
+			la $a0, array
+			add $a0, $a0, $v0
+			lw $t6, 0($a0)	# $t5 = array[min]
+			
+			sw $t6, ($t1)		# store min value in array at index $t1
+			la $a0, array
+			add $a0, $a0, $v0
+			la $t1, 0($a0)		# store address of the min element
+			sw $t5, 0($t1)		# store temp value i.e(current iterator's value) at the position min value was at in the array
+			
+			sub $t0, $t0, 1		# $t0 = array size - 1
+			sub $t0, $t0, $t2	# $t0 = array size - 1 - i
+			
+			mul $v0, $t0, 4	# store the address offset of the array  for iterator index $t0
+			la $a0, array
+			add $a0, $a0, $v0
+			la $t1, 0($a0)	# $t1 = address of the $t0'th element
+			lw $t5, ($t1)		# temporarily store the $t0'th element in $t5
+			
+			mul $v0, $t4 , 4	# store the address offset of the array for max index $t4
+			la $a0, array
+			add $a0, $a0, $v0
+			lw $t6, ($a0)		# $t6 = array[max]
+			sw $t6, ($t1)		# store min value in array at index $t1
+			
+			la $a0, array
+			add $a0, $a0, $v0
+			la $t1, 0($a0)	# store address of the max element
+			sw $t5, ($t1)		# store temp value (in $t0) at the position max value was at in the array
+			
+			li $t0, 10		# restore array size N in register $t0
+			div $t1, $t0, 2		# restore half the size of the array in $t1
+			
+			add $t2, $t2, 1		# increment outer iterator
+			j LOOP
+		
+		EXIT0:
+			li $v0, 10
+			syscall		#halt program
+
+	
+			
+			
+	
